@@ -1,0 +1,24 @@
+services:
+  trip-mcp:
+      build:
+        context: ./mcp-server/
+        dockerfile: Dockerfile
+      container_name: trip-mcp
+      restart: unless-stopped
+      labels:
+          - "traefik.enable=true"
+          - "traefik.http.routers.trip-mcp.rule=Host(`trip-mcp.${LOCAL_DOMAIN_NAME}`)"
+          - "traefik.http.routers.trip-mcp.entrypoints=websecure"
+          - "traefik.http.routers.trip-mcp.tls=true"
+          - "traefik.http.routers.trip-mcp.tls.certresolver=cloudflare"
+          - "traefik.http.routers.trip-mcp.middlewares=chain-no-auth@file"
+          - "traefik.http.services.trip-mcp.loadbalancer.server.port=3001"
+      networks:
+        - traefik_proxy
+      environment:
+        - TRIP_API_URL=${TRIP_API_URL:?err}
+        - TRIP_USERNAME=${TRIP_USERNAME:?err}
+        - TRIP_PASSWORD=${TRIP_PASSWORD:?err}
+networks:
+  traefik_proxy:
+    external: true

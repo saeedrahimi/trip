@@ -19,7 +19,6 @@ services:
       - /workspace/apps_data/trip/storage:/app/storage
     environment:
       - TZ=UTC
-
 networks:
   traefik_proxy:
     external: true
